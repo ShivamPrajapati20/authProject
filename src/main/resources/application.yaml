@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auth-sso-service
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+security:
+  jwt:
+    # For local non-docker runs you can override here or via env vars
+    secret: ${SECURITY_JWT_SECRET:dev-secret-change-me-32-chars-minimum}
+    accessTokenMinutes: ${SECURITY_JWT_ACCESS_TOKEN_MINUTES:15}
+    refreshTokenDays: ${SECURITY_JWT_REFRESH_TOKEN_DAYS:7}
