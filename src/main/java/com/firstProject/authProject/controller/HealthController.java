@@ -5,6 +5,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HealthController {
+
+    @GetMapping("/")
+    public String home() {
+        return "Auth/SSO Service is running";
+    }
+
     @GetMapping("/health")
     public String health() {
         return "OK";
