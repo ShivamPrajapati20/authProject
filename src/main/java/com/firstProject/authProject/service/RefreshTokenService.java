@@ -28,4 +28,35 @@ public class RefreshTokenService {
 
         return refreshTokenRepository.save(rt);
     }
+
+    public RefreshToken validateActiveToken(String token) {
+        RefreshToken rt = refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+
+        if (rt.isRevoked()) {
+            throw new IllegalArgumentException("Refresh token has been revoked");
+        }
+
+        if (rt.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalArgumentException("Refresh token has expired");
+        }
+
+        return rt;
+    }
+
+    public void revoke(RefreshToken rt) {
+        if (!rt.isRevoked()) {
+            rt.setRevoked(true);
+            refreshTokenRepository.save(rt);
+        }
+    }
+
+    /**
+     * Rotation (recommended): revoke old token and issue a new refresh token.
+     * If you don't want rotation, you can skip this and reuse same refresh token.
+     */
+    public RefreshToken rotate(RefreshToken oldToken) {
+        revoke(oldToken);
+        return createRefreshToken(oldToken.getUser());
+    }
 }

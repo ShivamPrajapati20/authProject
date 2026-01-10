@@ -1,6 +1,8 @@
 package com.firstProject.authProject.service;
 
 import com.firstProject.authProject.dto.request.LoginRequest;
+import com.firstProject.authProject.dto.request.LogoutRequest;
+import com.firstProject.authProject.dto.request.RefreshRequest;
 import com.firstProject.authProject.dto.request.RegisterRequest;
 import com.firstProject.authProject.dto.response.AuthResponse;
 import com.firstProject.authProject.dto.response.RegisterResponse;
@@ -27,6 +29,7 @@ public class AuthService {
 
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final com.firstProject.authProject.config.JwtProperties jwtProperties;
 
     public RegisterResponse register(RegisterRequest request) {
         String email = request.getEmail().trim().toLowerCase();
@@ -78,5 +81,34 @@ public class AuthService {
                 "Bearer",
                 15L * 60L // matches your default access token minutes
         );
+    }
+
+    public AuthResponse refresh(RefreshRequest request) {
+        RefreshToken current = refreshTokenService.validateActiveToken(request.getRefreshToken());
+        User user = current.getUser();
+
+        String role = user.getRoles().stream().findFirst().map(Role::getName).orElse("ROLE_USER");
+
+        String newAccessToken = jwtService.generateAccessToken(
+                user.getEmail(),
+                Map.of("role", role)
+        );
+
+        // rotate refresh token (recommended)
+        RefreshToken newRefresh = refreshTokenService.rotate(current);
+
+        long expiresInSeconds = jwtProperties.getAccessTokenMinutes() * 60;
+
+        return new AuthResponse(
+                newAccessToken,
+                newRefresh.getToken(),
+                "Bearer",
+                expiresInSeconds
+        );
+    }
+
+    public void logout(LogoutRequest request) {
+        RefreshToken rt = refreshTokenService.validateActiveToken(request.getRefreshToken());
+        refreshTokenService.revoke(rt);
     }
 }
