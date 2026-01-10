@@ -1,6 +1,8 @@
 package com.firstProject.authProject.controller;
 
+import com.firstProject.authProject.dto.request.LoginRequest;
 import com.firstProject.authProject.dto.request.RegisterRequest;
+import com.firstProject.authProject.dto.response.AuthResponse;
 import com.firstProject.authProject.dto.response.RegisterResponse;
 import com.firstProject.authProject.service.AuthService;
 import jakarta.validation.Valid;
@@ -20,5 +22,11 @@ public class AuthController {
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
