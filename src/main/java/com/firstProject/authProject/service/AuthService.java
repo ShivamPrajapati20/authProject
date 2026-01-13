@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.firstProject.authProject.security.JwtService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Set;
@@ -83,6 +84,7 @@ public class AuthService {
         );
     }
 
+    @Transactional
     public AuthResponse refresh(RefreshRequest request) {
         RefreshToken current = refreshTokenService.validateActiveToken(request.getRefreshToken());
         User user = current.getUser();
