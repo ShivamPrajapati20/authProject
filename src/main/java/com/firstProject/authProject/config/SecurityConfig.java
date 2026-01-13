@@ -23,7 +23,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // public endpoints
-                        .requestMatchers("/api/v1/auth/**", "/health", "/").permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/health",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         // protected endpoints
                         .requestMatchers("/api/v1/users/**").authenticated()
                         // default: protect everything else (recommended)

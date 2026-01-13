@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: ["main","master"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      # Testcontainers uses Docker on the runner (available by default on ubuntu-latest)
+      - name: Run tests
+        run: mvn -B clean test

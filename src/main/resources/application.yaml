@@ -11,6 +11,12 @@ spring:
   flyway:
     enabled: true
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 security:
   jwt:
     # For local non-docker runs you can override here or via env vars
